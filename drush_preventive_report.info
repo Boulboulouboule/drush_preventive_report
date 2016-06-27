@@ -1,0 +1,3 @@
+name = Drush Preventive Report
+description = A preventive Report generator for drupal websites
+core = 7.x

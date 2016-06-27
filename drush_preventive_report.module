@@ -1,0 +1,70 @@
+<?php
+
+function drush_active_modules(array $modules){
+  foreach ($modules as $module) {
+    drush_invoke_process("@self", "pm-enable", $module);
+  }
+}
+
+function drush_check_security_updates(){
+  $module_list = drush_invoke_process("@self", "ups");
+  // file_put_contents('update_status.txt', $module_list);
+  // $keys = array_keys($module_list);
+  // foreach ($keys as $key) {
+  //   if (is_array($module_list[$key])) {
+  //     foreach ($module_list[$key] as $module) {
+  //       $module_keys = array_keys($module);
+  //       print_r($module_keys);
+  //       drush_confirm('Continue in the  '.$key.' aray ?');
+  //       print_r($module);
+  //     }
+  //   }
+  //   drush_confirm('Will Display '.$key);
+  //   print_r($module_list[$key]);
+  // }
+$update = $module_list['output'];
+$lines = explode(PHP_EOL, $update);
+$data = [];
+foreach ($lines as $line) {
+  $column = preg_split('/[\s]{2,100}/', $line);
+  $data[] = $column;
+}
+$update_status = [];
+foreach ($data as $item) {
+  if($item[3] == 'SECURITY UPDATE available'){
+    $output = "Module : ".$item[0].',';
+    $output .= "Installed Version : ".$item[1].',';
+    $output .= "Proposed Version : ".$item[2].',';
+    $output .= "Status : ".$item[3];
+    $update_status[] = $output.PHP_EOL;
+  }
+}
+foreach ($data as $item) {
+  if($item[3] != 'SECURITY UPDATE available'){
+    $output = "Module : ".$item[0].',';
+    $output .= "Installed Version : ".$item[1].',';
+    $output .= "Proposed Version : ".$item[2].',';
+    $output .= "Status : ".$item[3];
+    $update_status[] = $output.PHP_EOL;
+  }
+}
+file_put_contents('update_status.csv', $update_status);
+print_r($update_status);
+
+}
+
+function drush_check_standard_updates(){
+  // $module_list = drush_invoke_process("@self", "ups");
+  // var_dump($module_list);
+  // foreach ($module_list as $module) {
+  //   // var_dump($module);
+  // }
+}
+
+function drush_check_hacked_modules_updates(){
+  echo __FUNCTION__;
+}
+
+function drush_create_report(){
+  echo __FUNCTION__;
+}
